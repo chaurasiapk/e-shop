@@ -1,0 +1,24 @@
+import ProductsListing from "@/components/products/products-listing";
+import {
+  getAllCatalogProducts,
+  getFilterOptions,
+} from "@/lib/products";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "All Products | E-Shop",
+  description: "Browse and filter smartphones, laptops, and accessories.",
+};
+
+export default function ProductsPage() {
+  const products = getAllCatalogProducts();
+  const filterOptions = getFilterOptions(products);
+
+  return (
+    <main className="flex-1 bg-surface">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <ProductsListing products={products} filterOptions={filterOptions} />
+      </div>
+    </main>
+  );
+}
