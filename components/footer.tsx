@@ -1,4 +1,4 @@
-import { categories } from "@/lib/data";
+import { ICategory } from "@/types/categories";
 import { Phone, MessageCircle } from "lucide-react";
 import Link from "next/link";
 
@@ -15,7 +15,7 @@ const customerServices = [
   "ShopLocator",
 ];
 
-export default function Footer() {
+export default function Footer({categories}: {categories: ICategory[]}) {
   return (
     <footer className="mt-auto">
       <div className="bg-footer text-white">
@@ -24,9 +24,9 @@ export default function Footer() {
             <h3 className="font-semibold mb-4">Popular Categories</h3>
             <ul className="space-y-2 text-sm text-white/90">
               {categories.map((item) => (
-                <li key={item.category_id}>
-                  <Link href={`/${item.category_id}`} className="hover:text-white hover:underline">
-                    {item.category_name}
+                <li key={item._id}>
+                  <Link href={`/categories/${item.slug}`} className="hover:text-white hover:underline">
+                    {item.name}
                   </Link>
                 </li>
               ))}
@@ -38,9 +38,9 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-white/90">
               {customerServices.map((item) => (
                 <li key={item}>
-                  <a href="#" className="hover:text-white hover:underline">
+                  <Link href="#" className="hover:text-white hover:underline">
                     {item}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

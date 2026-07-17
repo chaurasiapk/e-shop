@@ -1,15 +1,15 @@
 import ProductDetails from "@/components/product/product-details";
-import { getProductById } from "@/lib/products";
+import { getProductsDetails } from "@/features/products";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ product_id: string }>;
+  params: Promise<{ productId: string }>;
 }): Promise<Metadata> {
-  const { product_id } = await params;
-  const product = getProductById(product_id);
+  const { productId } = await params;
+  const { product } = await getProductsDetails(productId);
 
   if (!product) {
     return { title: "Product Not Found | E-Shop" };
@@ -24,10 +24,10 @@ export async function generateMetadata({
 export default async function ProductDetailsPage({
   params,
 }: {
-  params: Promise<{ product_id: string }>;
+  params: Promise<{ productId: string }>;
 }) {
-  const { product_id } = await params;
-  const product = getProductById(product_id);
+  const { productId } = await params;
+  const { product } = await getProductsDetails(productId);
 
   if (!product) {
     notFound();

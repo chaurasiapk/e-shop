@@ -1,33 +1,48 @@
 "use client";
 
-import { formatPrice } from "@/lib/products";
-import type { FilterOptions, ProductFilters } from "@/lib/products";
+import { IFilterOptions } from "@/types/products";
+import { formatPrice } from "@/utils/helper";
 
 interface ProductFiltersPanelProps {
-  filters: ProductFilters;
-  filterOptions: FilterOptions;
-  onChange: (filters: ProductFilters) => void;
+  filters: IFilterOptions;
+  filterOptions: IFilterOptions;
+  onChange: (filters: IFilterOptions) => void;
 }
 
-function toggleValue(values: string[], value: string) {
-  return values.includes(value)
-    ? values.filter((item) => item !== value)
+// function toggleValue(values: { id?: string , _id?: string , slug: string , label: string }[], value: string) {
+//   return values.some((v1)=>v1.id && (v1.id === value) || v1._id && (v1.slug === value))
+//     ? values.filter((item) => item.id && item.id !== value || item._id && value)
+//     : [...values, value];
+// }
+
+type ToggleItem = {
+  id?: string;
+  _id?: string;
+};
+
+const toggleValue = <T extends ToggleItem>(values: T[], value: T): T[] => {
+  const key = value.id ?? value._id;
+
+  const exists = values.some((item) => (item.id ?? item._id) === key);
+
+  return exists
+    ? values.filter((item) => (item.id ?? item._id) !== key)
     : [...values, value];
-}
+};
 
 export default function ProductFiltersPanel({
   filters,
   filterOptions,
   onChange,
 }: ProductFiltersPanelProps) {
-  const update = (patch: Partial<ProductFilters>) => {
+  const update = (patch: Partial<IFilterOptions>) => {
     onChange({ ...filters, ...patch });
   };
 
   return (
     <div className="space-y-6">
       <FilterSection title="Category">
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
           {filterOptions.categories.map((category) => (
             <label
               key={category.id}
@@ -35,10 +50,12 @@ export default function ProductFiltersPanel({
             >
               <input
                 type="checkbox"
-                checked={filters.categories.includes(category.id)}
+                checked={filters.categories.some(
+                  (item) => item.id === category.id,
+                )}
                 onChange={() =>
                   update({
-                    categories: toggleValue(filters.categories, category.id),
+                    categories: toggleValue(filters.categories, category),
                   })
                 }
                 className="rounded border-gray-300 text-primary focus:ring-primary"
@@ -53,7 +70,7 @@ export default function ProductFiltersPanel({
         <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
           {filterOptions.brands.map((brand) => (
             <label
-              key={brand}
+              key={brand.id}
               className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
             >
               <input
@@ -66,7 +83,7 @@ export default function ProductFiltersPanel({
                 }
                 className="rounded border-gray-300 text-primary focus:ring-primary"
               />
-              {brand}
+              {brand.label}
             </label>
           ))}
         </div>

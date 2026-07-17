@@ -1,35 +1,34 @@
 "use client";
 
-import { SlidersHorizontal, X } from "lucide-react";
-import {
-  createDefaultFilters,
-  filterCatalogProducts,
-  type CatalogProduct,
-  type FilterOptions,
-  type ProductFilters,
-} from "@/lib/products";
-import ProductCard from "@/components/home/product-card";
-import ProductFiltersPanel from "@/components/products/product-filters";
+import { IFilterOptions, IProducts } from "@/types/products";
+
 import { useMemo, useState } from "react";
+import { SlidersHorizontal, X } from "lucide-react";
+import ProductCard from "@/components/home/product-card";
+import { createDefaultFilters, filterCatalogProducts } from "@/features/product-filters";
+import ProductFiltersPanel from "./product-filters";
 
 interface ProductsListingProps {
-  products: CatalogProduct[];
-  filterOptions: FilterOptions;
+  products: IProducts;
+  filterOptions: IFilterOptions;
 }
 
 function countActiveFilters(
-  filters: ProductFilters,
-  defaults: ProductFilters,
+  filters: IFilterOptions,
+  defaults: IFilterOptions,
 ): number {
   let count = 0;
   if (filters.categories.length > 0) count += 1;
   if (filters.brands.length > 0) count += 1;
-  if (filters.minPrice !== defaults.minPrice || filters.maxPrice !== defaults.maxPrice) {
+  if (
+    filters.minPrice !== defaults.minPrice ||
+    filters.maxPrice !== defaults.maxPrice
+  ) {
     count += 1;
   }
-  if (filters.minRating > 0) count += 1;
-  if (filters.minDiscount > 0) count += 1;
-  if (filters.search.trim()) count += 1;
+  if (filters?.minRating && filters?.minRating > 0) count += 1;
+  if (filters?.minDiscount && filters?.minDiscount > 0) count += 1;
+  if (filters.search && filters.search.trim()) count += 1;
   return count;
 }
 
@@ -41,11 +40,11 @@ export default function ProductsListing({
     () => createDefaultFilters(filterOptions),
     [filterOptions],
   );
-  const [filters, setFilters] = useState<ProductFilters>(defaultFilters);
+  const [filters, setFilters] = useState<IFilterOptions>(defaultFilters);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const filteredProducts = useMemo(
-    () => filterCatalogProducts(products, filters),
+    () => filterCatalogProducts(products,filters),
     [products, filters],
   );
 
@@ -66,7 +65,7 @@ export default function ProductsListing({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-          <input
+          {/* <input
             type="search"
             value={filters.search}
             onChange={(event) =>
@@ -77,14 +76,14 @@ export default function ProductsListing({
             }
             placeholder="Search products or brands..."
             className="w-full sm:w-72 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-          />
+          /> */}
 
-          <select
+          {/* <select
             value={filters.sort}
             onChange={(event) =>
               setFilters((current) => ({
                 ...current,
-                sort: event.target.value as ProductFilters["sort"],
+                sort: event.target.value as IProductFilters["sort"],
               }))
             }
             className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -94,7 +93,7 @@ export default function ProductsListing({
             <option value="price-desc">Price: High to Low</option>
             <option value="rating">Rating: High to Low</option>
             <option value="discount">Discount: High to Low</option>
-          </select>
+          </select> */}
 
           <button
             onClick={() => setMobileFiltersOpen(true)}
@@ -109,22 +108,21 @@ export default function ProductsListing({
             )}
           </button>
         </div>
-      </div>
 
       {activeFilterCount > 0 && (
-        <div className="flex items-center justify-between bg-primary-light/50 border border-primary/10 rounded-lg px-4 py-3">
+        <div className="flex gap-2  items-center justify-between bg-primary-light/50 border border-primary/10 rounded-lg px-4 py-3">
           <p className="text-sm text-gray-700">
             {activeFilterCount} filter{activeFilterCount > 1 ? "s" : ""} applied
           </p>
           <button
             onClick={clearFilters}
-            className="text-sm font-medium text-primary hover:underline"
+            className="text-sm font-medium text-primary hover:underline cursor-pointer"
           >
             Clear all
           </button>
         </div>
       )}
-
+      </div>
       <div className="flex gap-8">
         <aside className="hidden lg:block w-64 shrink-0">
           <div className="sticky top-36 bg-white border border-gray-200 rounded-xl p-5">
@@ -146,26 +144,22 @@ export default function ProductsListing({
             />
           </div>
         </aside>
-
         <div className="flex-1 min-w-0">
           {filteredProducts.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredProducts.map((product) => (
                 <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                  discount={product.discount}
-                  image={product.image}
+                  key={product._id}
+                  {...product}
                   className="w-full"
                 />
               ))}
             </div>
           ) : (
             <div className="text-center py-20 bg-white border border-gray-200 rounded-xl">
-              <p className="text-lg font-medium text-gray-900">No products found</p>
+              <p className="text-lg font-medium text-gray-900">
+                No products found
+              </p>
               <p className="text-sm text-gray-500 mt-2">
                 Try adjusting your filters or search term.
               </p>
@@ -179,6 +173,7 @@ export default function ProductsListing({
           )}
         </div>
       </div>
+
 
       {mobileFiltersOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
@@ -222,7 +217,7 @@ export default function ProductsListing({
             </div>
           </div>
         </div>
-      )}
+      )} 
     </div>
   );
 }

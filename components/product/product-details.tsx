@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  BadgeCheck,
   MapPin,
   RotateCcw,
   Shield,
@@ -10,15 +9,10 @@ import {
   Truck,
   Wallet,
 } from "lucide-react";
-import type { ProductDetail } from "@/lib/products";
-import { formatPrice } from "@/lib/products";
 import ProductGallery, { VariantPicker } from "@/components/product/product-gallery";
-import CountdownTimer from "@/components/product/countdown-timer";
 import ProductAccordions from "@/components/product/product-accordions";
-
-interface ProductDetailsProps {
-  product: ProductDetail;
-}
+import { formatPrice } from "@/utils/helper";
+import { IDetailedProduct } from "@/types/products";
 
 const trustBadges = [
   { icon: Shield, label: "24 Months Warranty" },
@@ -28,8 +22,8 @@ const trustBadges = [
   { icon: MapPin, label: "Serviced Across India" },
 ];
 
-export default function ProductDetails({ product }: ProductDetailsProps) {
-  const [selectedVariantId, setSelectedVariantId] = useState(product.variants[0].id);
+export default function ProductDetails({ product }: { product: IDetailedProduct}) {
+  // const [selectedVariantId, setSelectedVariantId] = useState(product.variants[0].id);
   const [pincode, setPincode] = useState("");
   const [deliveryMessage, setDeliveryMessage] = useState<string | null>(null);
 
@@ -44,19 +38,18 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
       <ProductGallery images={product.images} name={product.name} />
-
-      <div className="space-y-5">
+      <div className="space-y-5"> 
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2 text-gray-600">
-            <span className="font-medium text-gray-900">{product.tag}</span>
-            <span>|</span>
-            <span>{product.brand}</span>
+            {/* <span className="font-medium text-gray-900">{product.}</span> */}
+            {/* <span>|</span> */}
+            <span className="capitalize">{product.brand}</span>
           </div>
           <div className="flex items-center gap-1 text-gray-700">
             <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
             <span className="font-medium">{product.rating}</span>
             <span className="text-gray-400">|</span>
-            <span>{product.reviews.toLocaleString("en-IN")} Reviews</span>
+            <span>{product.totalReviews.toLocaleString("en-IN")} Reviews</span>
           </div>
         </div>
 
@@ -65,7 +58,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             {product.name}
           </h1>
           <p className="text-sm text-gray-500 mt-2">
-            {product.sku} | {product.categoryLabel}
+            {/* {product.sku} |  */}
+            <span className="capitalize">{product.category}</span>
           </p>
         </div>
 
@@ -87,14 +81,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           </p>
         </div>
 
-        <CountdownTimer endsAt={product.saleEndsAt} />
+        {/* <CountdownTimer endsAt={product.updatedAt.toISOString()} /> */}
 
         <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="font-medium text-gray-900">3D Try On</p>
+              <p className="font-medium text-gray-900">Try 360&deg; view</p>
               <p className="text-sm text-gray-600 mt-1">
-                See how this product looks on you
+                See how this product looks in 360&deg; view
               </p>
             </div>
             <button className="text-sm font-semibold text-primary hover:underline shrink-0">
@@ -103,12 +97,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           </div>
         </div>
 
-        <VariantPicker
+        {/* <VariantPicker
           variants={product.variants}
           variantLabel={product.variantLabel}
           selectedId={selectedVariantId}
           onSelect={setSelectedVariantId}
-        />
+        /> */}
 
         <div className="grid grid-cols-2 gap-3">
           <button className="py-3 px-4 border-2 border-gray-900 rounded-lg font-semibold text-gray-900 hover:bg-gray-50 transition-colors">
@@ -158,35 +152,10 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           ))}
         </div>
 
-        <div className="space-y-3">
-          <p className="font-medium text-gray-900">Available Offers</p>
-          <div className="border-2 border-amber-300 bg-amber-50/40 rounded-xl p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <BadgeCheck className="w-5 h-5 text-amber-700" />
-                  <p className="font-semibold text-gray-900">
-                    EMI Plans powered by Razorpay
-                  </p>
-                </div>
-                <p className="text-sm text-gray-700">
-                  No cost EMI starting from {formatPrice(product.emiAmount)}/month
-                </p>
-                <p className="text-xs text-gray-500 mt-2">
-                  HDFC • ICICI • Axis • SBI • Kotak
-                </p>
-              </div>
-              <button className="text-sm font-semibold border border-gray-900 rounded-lg px-3 py-2 hover:bg-white transition-colors shrink-0">
-                View plans
-              </button>
-            </div>
-          </div>
-        </div>
-
         <ProductAccordions
           description={product.description}
           specifications={product.specifications}
-          moreInfo={product.moreInfo}
+          moreInfo={"product.moreInfo"}
         />
       </div>
     </div>

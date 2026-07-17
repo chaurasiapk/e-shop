@@ -1,9 +1,40 @@
-import MainHeader from "./main-header";
+import {  User, ShoppingCart, Menu, Heart } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { LogoLight } from "@/utils/contants";
+import SearchInput from "./search-input";
 
 export default function Header() {
+  
   return (
     <header className="sticky top-0 z-50 shadow-sm">
-      <MainHeader />
+      <div className="bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-6">
+          <button className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
+            <Menu className="w-5 h-5 text-primary" />
+          </button>
+          <Link href={"/"}>
+            <Image src={LogoLight} alt="E-Shop" width={142} height={142} />
+          </Link>
+
+          <SearchInput />
+
+          <div className="flex items-center gap-6 shrink-0">
+            <button className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer">
+              <User className="w-5 h-5" />
+              <span className="hidden sm:inline">Login</span>
+            </button>
+            <button className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer">
+              <Heart className="w-5 h-5" />
+              <span className="hidden sm:inline">Wishlist</span>
+            </button>
+            <button className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer">
+              <ShoppingCart className="w-5 h-5" />
+              <span className="hidden sm:inline">Cart</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </header>
   );
 }

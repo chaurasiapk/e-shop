@@ -1,26 +1,30 @@
 import Image from "next/image";
-import { topBrands } from "@/lib/data";
 import SectionHeader from "./section-header";
+import { getAllBrands } from "@/features/brands";
+import { getRandomColor } from "@/utils/helper";
 
-export default function TopBrands() {
+export default async function TopBrands() {
+  const { brands } = await getAllBrands();
+  const topBrands = brands.slice(0, 4);
+
   return (
     <section>
-      <SectionHeader title="Top Top Brands" />
+      <SectionHeader title="Top Brands" />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {topBrands.map((brand) => (
           <div
-            key={brand.name}
-            className={`${brand.bg} rounded-2xl overflow-hidden relative h-48 md:h-56 cursor-pointer hover:shadow-lg transition-shadow`}
+            key={brand._id}
+            className={`bg-[${getRandomColor()}] rounded-2xl overflow-hidden relative h-48 md:h-56 cursor-pointer hover:shadow-lg transition-shadow    from-slate-800 via-slate-700 to-slate-900`}
           >
             <div className="p-6 relative z-10">
               <h3 className="text-xl font-bold text-gray-800">{brand.name}</h3>
               <p className="text-sm font-semibold text-primary mt-1">
-                {brand.subtitle}
+                {brand.description}
               </p>
             </div>
             <div className="absolute right-4 bottom-0 w-40 h-36">
               <Image
-                src={brand.image}
+                src={brand.logo}
                 alt={brand.name}
                 fill
                 className="object-contain object-bottom"

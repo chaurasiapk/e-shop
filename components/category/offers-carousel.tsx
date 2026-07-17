@@ -3,11 +3,11 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { Star } from "lucide-react";
-import type { CategoryOffer } from "@/lib/data";
-import { formatPrice } from "@/lib/data";
+import { ICategoryOffer } from "@/types/categories";
+import { formatPrice } from "@/utils/helper";
 
 interface OffersCarouselProps {
-  offers: CategoryOffer[];
+  offers: ICategoryOffer[];
 }
 
 export default function OffersCarousel({ offers }: OffersCarouselProps) {

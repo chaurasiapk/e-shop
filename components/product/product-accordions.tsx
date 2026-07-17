@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import type { ProductSpecification } from "@/lib/products";
+import { ISepecification } from "@/types/products";
 
 interface ProductAccordionsProps {
   description: string;
-  specifications: ProductSpecification[];
-  moreInfo: string;
+  specifications: ISepecification;
+  moreInfo?: string;
 }
 
 const sections = ["description", "specification", "more"] as const;
@@ -16,7 +16,7 @@ type Section = (typeof sections)[number];
 export default function ProductAccordions({
   description,
   specifications,
-  moreInfo,
+  moreInfo="",
 }: ProductAccordionsProps) {
   const [openSection, setOpenSection] = useState<Section>("description");
 
@@ -40,10 +40,10 @@ export default function ProductAccordions({
         onToggle={() => toggle("specification")}
       >
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {specifications.map((spec) => (
-            <div key={spec.label} className="text-sm">
-              <dt className="text-gray-500">{spec.label}</dt>
-              <dd className="font-medium text-gray-900">{spec.value}</dd>
+          {Object.keys(specifications).map((key) => (
+            <div key={key} className="text-sm">
+              <dt className="text-gray-500 capitalize">{[key]}</dt>
+              <dd className="font-medium text-gray-900">{specifications[key]}</dd>
             </div>
           ))}
         </dl>

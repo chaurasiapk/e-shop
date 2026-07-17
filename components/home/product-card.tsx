@@ -1,26 +1,17 @@
+import { IProduct } from "@/types/products";
+import { formatPrice } from "@/utils/helper";
 import Image from "next/image";
-import { formatPrice } from "@/lib/data";
 import Link from "next/link";
-
-interface ProductCardProps {
-  name: string;
-  price: number;
-  originalPrice: number;
-  discount: number;
-  image: string;
-  id: string;
-  className?: string;
-}
 
 export default function ProductCard({
   name,
   price,
   originalPrice,
-  discount,
-  image,
-  id: productId,
+  discount = 0,
+  images,
+  _id: productId,
   className = "",
-}: ProductCardProps) {
+}: IProduct & { className?: string; discount?: number }) {
   const savings = originalPrice - price;
 
   return (
@@ -29,12 +20,15 @@ export default function ProductCard({
       className={`bg-white rounded-xl border border-gray-100 p-4 flex flex-col hover:shadow-md transition-shadow shrink-0 w-[180px] sm:w-auto ${className}`}
     >
       <div className="relative mb-3">
-        <span className="absolute top-0 right-0 bg-primary text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
-          {discount}% OFF
-        </span>
+        {!!discount && (
+          <span className="absolute top-0 right-0 bg-primary text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
+            {discount}% OFF
+          </span>
+        )}
+
         <div className="relative w-full aspect-square">
           <Image
-            src={image}
+            src={images[0]}
             alt={name}
             fill
             className="object-contain"
@@ -46,7 +40,9 @@ export default function ProductCard({
         {name}
       </h3>
       <div className="mt-auto">
-        <p className="text-base font-bold text-gray-900">{formatPrice(price)}</p>
+        <p className="text-base font-bold text-gray-900">
+          {formatPrice(price)}
+        </p>
         <p className="text-sm text-gray-400 line-through">
           {formatPrice(originalPrice)}
         </p>

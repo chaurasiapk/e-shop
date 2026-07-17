@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 
-import Header from "@/components/header";
 import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
+import Header from "@/components/header";
+import { getCategories } from "@/features/categories";
+import { FavIcon } from "@/utils/contants";
 
 import "./globals.css";
 
@@ -10,22 +12,24 @@ export const metadata: Metadata = {
   title: "E-Shop - Your Online Shop",
   description: "Online Shopping Platform",
   icons: {
-    icon: "https://res.cloudinary.com/dobci6t4h/image/upload/v1783655133/Screenshot_2026-07-10_at_9.14.49_AM-removebg-preview_dnfyir.png",
+    icon: FavIcon,
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { categories } = await getCategories();
+
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col ">
         <Header />
-        <Navbar />
+        <Navbar categories={categories} />
         {children}
-        <Footer />
+        <Footer categories={categories} />
       </body>
     </html>
   );

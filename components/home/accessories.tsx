@@ -1,23 +1,25 @@
 import Image from "next/image";
-import { computerAccessories } from "@/lib/data";
 import SectionHeader from "./section-header";
 import Link from "next/link";
+import { getAllProducts } from "@/features/products";
 
-export default function Accessories() {
+export default async function Accessories() {
+  const { products  } =  await getAllProducts()
+  
   return (
     <section>
       <SectionHeader title="Top Accessories" viewAllHref="/accessories"/>
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 overflow-auto">
-        {computerAccessories.filter((_,index)=>index < 6).map((item) => (
+        {products.filter(({category})=>category==="accessory").map((item) => (
           <Link
-            href={`/${item.id}`}
+            href={`/${item._id}`}
             key={item.name}
             className="flex flex-col items-center gap-2 group"
           >
             <div className="w-full aspect-square rounded-2xl bg-white border border-gray-100 overflow-hidden group-hover:shadow-md transition-shadow">
               <div className="relative w-full h-full p-2">
                 <Image
-                  src={item.image}
+                  src={item.images[0]}
                   alt={item.name}
                   fill
                   className="object-cover rounded-xl"
@@ -28,7 +30,7 @@ export default function Accessories() {
             <div className="text-center">
               <p className="text-sm font-medium text-gray-800">{item.name}</p>
               <p className="text-xs text-primary font-semibold">
-                {/* {item.brand} */}
+                {item.brand}
               </p>
             </div>
           </Link>
