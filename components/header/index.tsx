@@ -1,11 +1,19 @@
-import {  User, ShoppingCart, Menu, Heart } from "lucide-react";
+import { Suspense } from "react";
+import { User, ShoppingCart, Menu, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { LogoLight } from "@/utils/contants";
 import SearchInput from "./search-input";
 
+function SearchInputFallback() {
+  return (
+    <div className="flex-1 max-w-2xl mx-auto">
+      <div className="w-full h-[46px] bg-surface rounded-full border border-gray-200 animate-pulse" />
+    </div>
+  );
+}
+
 export default function Header() {
-  
   return (
     <header className="sticky top-0 z-50 shadow-sm">
       <div className="bg-white border-b border-gray-100">
@@ -17,7 +25,9 @@ export default function Header() {
             <Image src={LogoLight} alt="E-Shop" width={142} height={142} />
           </Link>
 
-          <SearchInput />
+          <Suspense fallback={<SearchInputFallback />}>
+            <SearchInput />
+          </Suspense>
 
           <div className="flex items-center gap-6 shrink-0">
             <button className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer">

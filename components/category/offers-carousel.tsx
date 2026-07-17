@@ -3,11 +3,11 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { Star } from "lucide-react";
-import { ICategoryOffer } from "@/types/categories";
 import { formatPrice } from "@/utils/helper";
+import { IOffer } from "@/types/offers";
 
 interface OffersCarouselProps {
-  offers: ICategoryOffer[];
+  offers: IOffer[];
 }
 
 export default function OffersCarousel({ offers }: OffersCarouselProps) {
@@ -34,7 +34,7 @@ export default function OffersCarousel({ offers }: OffersCarouselProps) {
       >
         {offers.map((offer) => (
           <article
-            key={offer.id}
+            key={offer._id}
             className={`relative shrink-0 w-[88%] sm:w-[70%] md:w-[55%] snap-start rounded-2xl bg-gradient-to-br ${offer.bg} overflow-hidden min-h-[220px]`}
           >
             <div className="flex h-full p-5 md:p-6">
@@ -85,7 +85,7 @@ export default function OffersCarousel({ offers }: OffersCarouselProps) {
       <div className="flex justify-center gap-2 mt-4">
         {offers.map((offer, index) => (
           <button
-            key={offer.id}
+            key={offer._id}
             aria-label={`Go to offer ${index + 1}`}
             onClick={() => {
               const container = scrollRef.current;
