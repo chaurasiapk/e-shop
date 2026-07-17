@@ -1,0 +1,9 @@
+packages:
+  - "."
+
+# pnpm 11: allow packages that need install/build scripts (CI/Render)
+allowBuilds:
+  sharp: true
+  esbuild: true
+  unrs-resolver: true
+  "@tailwindcss/oxide": true
