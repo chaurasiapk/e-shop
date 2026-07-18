@@ -35,6 +35,7 @@ export type IProduct = {
   price: number;
   originalPrice: number;
   thumbnail: string;
+  discount: number;
   rating: number;
   images: string[];
   stock: number;

@@ -10,15 +10,41 @@ export const metadata: Metadata = {
   description: "Browse and filter smartphones, laptops, and accessories.",
 };
 
-export default async function ProductsPage() {
-  const { products } = await getAllProducts()
-  const filterOptions = await getFilterOptions(products as IProducts); 
-   
+type ProductsSearchParams = {
+  category?: string | string[];
+  brand?: string | string[];
+  search?: string | string[];
+};
+
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<ProductsSearchParams>;
+}) {
+  const params = await searchParams;
+  const { products } = await getAllProducts();
+  const filterOptions = await getFilterOptions(products as IProducts);
+  const listingKey = [
+    toParamKey(params.category),
+    toParamKey(params.brand),
+    toParamKey(params.search),
+  ].join("|");
+
   return (
     <main className="flex-1 bg-surface">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <ProductsListing products={products} filterOptions={filterOptions} />
+        <ProductsListing
+          key={listingKey}
+          products={products}
+          filterOptions={filterOptions}
+          initialParams={params}
+        />
       </div>
     </main>
   );
+}
+
+function toParamKey(value?: string | string[]) {
+  if (!value) return "";
+  return Array.isArray(value) ? value.join(",") : value;
 }

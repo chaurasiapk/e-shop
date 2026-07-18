@@ -5,12 +5,21 @@ import { IFilterOptions, IProducts } from "@/types/products";
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "@/components/home/product-card";
-import { createDefaultFilters, filterCatalogProducts } from "@/features/product-filters";
+import {
+  createDefaultFilters,
+  createFiltersFromParams,
+  filterCatalogProducts,
+} from "@/features/product-filters";
 import ProductFiltersPanel from "./product-filters";
 
 interface ProductsListingProps {
   products: IProducts;
   filterOptions: IFilterOptions;
+  initialParams?: {
+    category?: string | string[];
+    brand?: string | string[];
+    search?: string | string[];
+  };
 }
 
 function countActiveFilters(
@@ -35,16 +44,19 @@ function countActiveFilters(
 export default function ProductsListing({
   products,
   filterOptions,
+  initialParams,
 }: ProductsListingProps) {
   const defaultFilters = useMemo(
     () => createDefaultFilters(filterOptions),
     [filterOptions],
   );
-  const [filters, setFilters] = useState<IFilterOptions>(defaultFilters);
+  const [filters, setFilters] = useState<IFilterOptions>(() =>
+    createFiltersFromParams(filterOptions, initialParams),
+  );
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const filteredProducts = useMemo(
-    () => filterCatalogProducts(products,filters),
+    () => filterCatalogProducts(products, filters),
     [products, filters],
   );
 
@@ -57,15 +69,31 @@ export default function ProductsListing({
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <div className="">
           <h1 className="text-2xl font-bold text-gray-900">All Products</h1>
           <p className="text-sm text-gray-500 mt-1">
             Showing {filteredProducts.length} of {products.length} products
           </p>
+          </div>
+         
+          {activeFilterCount > 0 && (
+        <div className="flex gap-2  items-center justify-between bg-primary-light/50 border border-primary/10 rounded-lg px-4 py-3">
+          <p className="text-sm text-gray-700">
+            {activeFilterCount} filter{activeFilterCount > 1 ? "s" : ""} applied
+          </p>
+          <button
+            onClick={clearFilters}
+            className="text-sm font-medium text-primary hover:underline cursor-pointer"
+          >
+            Clear all
+          </button>
         </div>
-
+      )}
+        </div>
+        
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-          {/* <input
+          <input
             type="search"
             value={filters.search}
             onChange={(event) =>
@@ -76,14 +104,14 @@ export default function ProductsListing({
             }
             placeholder="Search products or brands..."
             className="w-full sm:w-72 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-          /> */}
+          />
 
-          {/* <select
+          <select
             value={filters.sort}
             onChange={(event) =>
               setFilters((current) => ({
                 ...current,
-                sort: event.target.value as IProductFilters["sort"],
+                sort: event.target.value as IFilterOptions["sort"],
               }))
             }
             className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -93,7 +121,7 @@ export default function ProductsListing({
             <option value="price-desc">Price: High to Low</option>
             <option value="rating">Rating: High to Low</option>
             <option value="discount">Discount: High to Low</option>
-          </select> */}
+          </select>
 
           <button
             onClick={() => setMobileFiltersOpen(true)}
@@ -109,19 +137,7 @@ export default function ProductsListing({
           </button>
         </div>
 
-      {activeFilterCount > 0 && (
-        <div className="flex gap-2  items-center justify-between bg-primary-light/50 border border-primary/10 rounded-lg px-4 py-3">
-          <p className="text-sm text-gray-700">
-            {activeFilterCount} filter{activeFilterCount > 1 ? "s" : ""} applied
-          </p>
-          <button
-            onClick={clearFilters}
-            className="text-sm font-medium text-primary hover:underline cursor-pointer"
-          >
-            Clear all
-          </button>
-        </div>
-      )}
+      
       </div>
       <div className="flex gap-8">
         <aside className="hidden lg:block w-64 shrink-0">

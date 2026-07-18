@@ -31,7 +31,11 @@ export default async function CategoryDetails({
     <main className="flex-1 bg-white">
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
         <OffersCarousel offers={offers} />
-        <BrandGrid brands={brands} categoryName={category.name} />
+        <BrandGrid
+          brands={brands}
+          categoryName={category.name}
+          categorySlug={category.slug}
+        />
         <ProductGrid products={products} title={`Top Rated ${category.name}`} />
         {products.length === 0 && offers.length === 0 && brands.length === 0 && (
           <div className="text-center py-16 text-gray-500">

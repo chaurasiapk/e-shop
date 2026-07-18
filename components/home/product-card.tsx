@@ -7,13 +7,14 @@ export default function ProductCard({
   name,
   price,
   originalPrice,
-  discount = 0,
+  discount,
   images,
   _id: productId,
   className = "",
-}: IProduct & { className?: string; discount?: number }) {
+}: IProduct & { className?: string; }) {
   const savings = originalPrice - price;
-
+  console.log({discount});
+  
   return (
     <Link
       href={`/products/${productId}`}

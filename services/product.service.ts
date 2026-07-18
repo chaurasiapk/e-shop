@@ -14,6 +14,7 @@ function toProduct(doc: IDetailedProduct): IProduct {
     originalPrice: doc.originalPrice,
     thumbnail: doc.thumbnail,
     rating: doc.rating,
+    discount: doc.discount,
     images: doc.images,
     stock: doc.stock,
     isFeatured: doc.isFeatured,

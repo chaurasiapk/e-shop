@@ -13,6 +13,47 @@ export function createDefaultFilters(options: IFilterOptions): IFilterOptions {
   };
 }
 
+export function createFiltersFromParams(
+  options: IFilterOptions,
+  params?: {
+    category?: string | string[];
+    brand?: string | string[];
+    search?: string | string[];
+  },
+): IFilterOptions {
+  const filters = createDefaultFilters(options);
+
+  const categorySlugs = normalizeParam(params?.category);
+  const brandSlugs = normalizeParam(params?.brand);
+  const search = Array.isArray(params?.search)
+    ? params.search[0]
+    : params?.search;
+
+  if (categorySlugs.length > 0) {
+    filters.categories = options.categories.filter((category) =>
+      categorySlugs.includes(category.id),
+    );
+  }
+
+  if (brandSlugs.length > 0) {
+    filters.brands = options.brands.filter((brand) =>
+      brandSlugs.includes(brand.id),
+    );
+  }
+
+  if (search?.trim()) {
+    filters.search = search.trim();
+  }
+
+  return filters;
+}
+
+function normalizeParam(value?: string | string[]) {
+  if (!value) return [];
+  const values = Array.isArray(value) ? value : value.split(",");
+  return values.map((item) => item.trim().toLowerCase()).filter(Boolean);
+}
+
 export function filterCatalogProducts(
   products: IProducts,
   filters: IFilterOptions,

@@ -75,7 +75,7 @@ export default function ProductFiltersPanel({
             >
               <input
                 type="checkbox"
-                checked={filters.brands.includes(brand)}
+                checked={filters.brands.some((item) => item.id === brand.id)}
                 onChange={() =>
                   update({
                     brands: toggleValue(filters.brands, brand),
