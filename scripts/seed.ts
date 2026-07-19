@@ -154,6 +154,7 @@ async function seed() {
           name: "iPhone 16",
           thumbnail: iphoneThumb,
           price: 79999,
+          originalPrice: 79999,
           quantity: 1,
         },
         {
@@ -161,6 +162,7 @@ async function seed() {
           name: "MX Master 3S Wireless Mouse",
           thumbnail: mouseThumb,
           price: 8995,
+          originalPrice: 9995,
           quantity: 2,
         },
       ],
@@ -176,6 +178,7 @@ async function seed() {
           name: 'MacBook Air 13" M4',
           thumbnail: macThumb,
           price: 114900,
+          originalPrice: 119900,
           quantity: 1,
         },
       ],

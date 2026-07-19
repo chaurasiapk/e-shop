@@ -1,4 +1,4 @@
-// import "server-only";
+import "server-only";
 import { connectDB } from "@/lib/db";
 import { OfferModel } from "@/models/offer.model";
 import type { IOffer } from "@/types/offers";

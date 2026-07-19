@@ -1,4 +1,4 @@
-// import "server-only";
+import "server-only";
 import { connectDB } from "@/lib/db";
 import { CategoryModel } from "@/models/category.model";
 import type { ICategory } from "@/types/categories";

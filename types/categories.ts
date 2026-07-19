@@ -9,16 +9,3 @@ export type ICategory = {
   createdAt: Date;
   updatedAt: Date;
 };
-
-// export type ICategoryOffer = {
-//   id: string;
-//   eventLabel: string;
-//   title: string;
-//   price: number;
-//   originalPrice: number;
-//   tagline: string;
-//   emiAmount: number;
-//   rating: number;
-//   image: string;
-//   bg: string;
-// };

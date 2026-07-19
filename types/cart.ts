@@ -3,7 +3,9 @@ export type ICartItem = {
   name: string;
   thumbnail: string;
   price: number;
+  originalPrice: number;
   quantity: number;
+  selected?: boolean;
 };
 
 export type ICart = {

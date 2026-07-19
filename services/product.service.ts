@@ -1,4 +1,4 @@
-// import "server-only";
+import "server-only";
 import { connectDB } from "@/lib/db";
 import { ProductModel } from "@/models/product.model";
 import type { IDetailedProduct, IProduct } from "@/types/products";

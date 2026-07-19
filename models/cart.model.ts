@@ -1,3 +1,4 @@
+import "server-only";
 import { Schema, models, model } from "mongoose";
 import type { ICart } from "@/types/cart";
 
@@ -7,6 +8,7 @@ const cartItemSchema = new Schema(
     name: { type: String, required: true },
     thumbnail: { type: String, required: true },
     price: { type: Number, required: true },
+    originalPrice: { type: Number, required: true },
     quantity: { type: Number, required: true, min: 1 },
   },
   { _id: false },

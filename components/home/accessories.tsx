@@ -8,11 +8,11 @@ export default async function Accessories() {
   
   return (
     <section>
-      <SectionHeader title="Top Accessories" viewAllHref="/accessories"/>
+      <SectionHeader title="Top Accessories" viewAllHref="categories/accessories"/>
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 overflow-auto">
-        {products.filter(({category})=>category==="accessory").map((item) => (
+        {products.filter(({category})=>category==="accessories").map((item) => (
           <Link
-            href={`/${item._id}`}
+            href={`categories/${item.category}`}
             key={item.name}
             className="flex flex-col items-center gap-2 group"
           >

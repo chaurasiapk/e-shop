@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { LogoLight } from "@/utils/contants";
 import SearchInput from "./search-input";
+import CartIcon from "./cart-icon";
 
 function SearchInputFallback() {
   return (
@@ -30,18 +31,23 @@ export default function Header() {
           </Suspense>
 
           <div className="flex items-center gap-6 shrink-0">
-            <button className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer">
+            <Link
+              href="/login"
+              className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer"
+            >
               <User className="w-5 h-5" />
               <span className="hidden sm:inline">Login</span>
-            </button>
-            <button className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer">
+            </Link>
+            <Link
+              href="/wishlist"
+              className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer"
+            >
               <Heart className="w-5 h-5" />
               <span className="hidden sm:inline">Wishlist</span>
-            </button>
-            <button className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer">
-              <ShoppingCart className="w-5 h-5" />
-              <span className="hidden sm:inline">Cart</span>
-            </button>
+            </Link>
+
+            {/* Cart Icon */}
+            <CartIcon />
           </div>
         </div>
       </div>

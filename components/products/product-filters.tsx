@@ -9,12 +9,6 @@ interface ProductFiltersPanelProps {
   onChange: (filters: IFilterOptions) => void;
 }
 
-// function toggleValue(values: { id?: string , _id?: string , slug: string , label: string }[], value: string) {
-//   return values.some((v1)=>v1.id && (v1.id === value) || v1._id && (v1.slug === value))
-//     ? values.filter((item) => item.id && item.id !== value || item._id && value)
-//     : [...values, value];
-// }
-
 type ToggleItem = {
   id?: string;
   _id?: string;

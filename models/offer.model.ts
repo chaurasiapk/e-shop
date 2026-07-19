@@ -1,3 +1,4 @@
+import "server-only";
 import { Schema, models, model } from "mongoose";
 import type { IOffer } from "@/types/offers";
 
