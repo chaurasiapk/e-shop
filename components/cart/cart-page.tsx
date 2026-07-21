@@ -160,7 +160,7 @@ export default function CartPage({
                   onClick={handleToggleAll}
                   className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors flex-shrink-0 ${
                     allSelected
-                      ? "bg-gray-900 border-gray-900"
+                      ? "bg-primary border-primary"
                       : "border-gray-300 bg-white"
                   }`}
                 >

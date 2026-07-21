@@ -45,7 +45,7 @@ export default function HeroCarousel({ offers = [] }: { offers?: IOffer[] }) {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       className={`relative overflow-hidden rounded-2xl bg-gradient-to-r
-    ${heroSlides[current].bg}  h-[320px] md:h-[420px] cursor-pointer`}
+    ${heroSlides[current].bg}  h-[280px] md:h-[320px] cursor-pointer`}
     >
       {/* Slider Track */}
       <div

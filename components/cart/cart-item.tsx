@@ -27,7 +27,7 @@ export default function CartItem({ item, onToggleSelect, onRemove, onQuantityCha
               disabled={disabled}
               className={`mt-1 w-5 h-5 rounded flex items-center justify-center border-2 transition-colors flex-shrink-0 ${
                 item.selected
-                  ? 'bg-gray-900 border-gray-900'
+                  ? 'bg-primary border-primary'
                   : 'border-gray-300 bg-white'
               }`}
             >

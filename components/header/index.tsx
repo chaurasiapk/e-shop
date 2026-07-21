@@ -1,10 +1,12 @@
 import { Suspense } from "react";
-import { User, ShoppingCart, Menu, Heart } from "lucide-react";
+import { User, Menu, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { LogoLight } from "@/utils/contants";
 import SearchInput from "./search-input";
 import CartIcon from "./cart-icon";
+import { getCurrentUser } from "@/features/auth";
+import UserMenu from "./user-menu";
 
 function SearchInputFallback() {
   return (
@@ -14,7 +16,8 @@ function SearchInputFallback() {
   );
 }
 
-export default function Header() {
+export default async function Header() {
+  const user = await getCurrentUser();
   return (
     <header className="sticky top-0 z-50 shadow-sm">
       <div className="bg-white border-b border-gray-100">
@@ -31,20 +34,30 @@ export default function Header() {
           </Suspense>
 
           <div className="flex items-center gap-6 shrink-0">
-            <Link
-              href="/login"
-              className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer"
-            >
-              <User className="w-5 h-5" />
-              <span className="hidden sm:inline">Login</span>
-            </Link>
-            <Link
-              href="/wishlist"
+            {user ? (
+              <>
+              <UserMenu user={user} />
+              
+              <Link
+              href="/profile/wishlist"
               className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer"
             >
               <Heart className="w-5 h-5" />
               <span className="hidden sm:inline">Wishlist</span>
             </Link>
+              </>
+
+              
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer"
+              >
+                <User className="w-5 h-5" />
+                <span className="hidden sm:inline">Login</span>
+              </Link>
+            )}
+            
 
             {/* Cart Icon */}
             <CartIcon />
