@@ -8,6 +8,7 @@ import { FavIcon } from "@/utils/contants";
 import { getCurrentUser } from "@/features/auth";
 import { getWishlistByUserId } from "@/services/wishlist.service";
 import WishlistProvider from "@/components/wishlist/wishlist-provider";
+import LoginPromptProvider from "@/components/auth/login-prompt-provider";
 
 import "./globals.css";
 
@@ -30,12 +31,14 @@ export default async function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col ">
-        <WishlistProvider initialProductIds={wishlist?.productIds ?? []} isAuthenticated={Boolean(user)}>
-          <Header />
-          <Navbar categories={categories} />
-          {children}
-          <Footer categories={categories} />
-        </WishlistProvider>
+        <LoginPromptProvider isAuthenticated={Boolean(user)}>
+          <WishlistProvider initialProductIds={wishlist?.productIds ?? []} isAuthenticated={Boolean(user)}>
+            <Header />
+            <Navbar categories={categories} />
+            {children}
+            <Footer categories={categories} />
+          </WishlistProvider>
+        </LoginPromptProvider>
       </body>
     </html>
   );

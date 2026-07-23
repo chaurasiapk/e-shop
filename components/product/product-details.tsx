@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { MapPin, RotateCcw, Shield, Star, Truck, Wallet } from "lucide-react";
 import ProductGallery from "@/components/product/product-gallery";
 import ProductAccordions from "@/components/product/product-accordions";
@@ -8,6 +8,10 @@ import { formatPrice } from "@/utils/helper";
 import { IDetailedProduct } from "@/types/products";
 import { addProductToCart } from "@/features/cart";
 import { addGuestCartItem } from "@/utils/guest-cart";
+import { AUTH_ACTION_EVENT, isPendingAuthAction, type PendingAuthAction, useLoginPrompt } from "@/components/auth/login-prompt-provider";
+import { toggleWishlistProduct } from "@/features/wishlist";
+import { useWishlist } from "@/components/wishlist/wishlist-provider";
+import Tooltip from "@/components/ui/tooltip";
 
 const trustBadges = [
   { icon: Shield, label: "24 Months Warranty" },
@@ -29,6 +33,8 @@ export default function ProductDetails({
   const [deliveryMessage, setDeliveryMessage] = useState<string | null>(null);
   const [cartMessage, setCartMessage] = useState<string | null>(null);
   const [isAddingToCart, startAddToCart] = useTransition();
+  const { requestLogin } = useLoginPrompt();
+  const { isWishlisted, setWishlisted } = useWishlist();
 
   const checkDelivery = () => {
     if (pincode.length === 6) {
@@ -66,10 +72,18 @@ export default function ProductDetails({
   };
 
   const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      requestLogin({ type: "buy-now", productId: product._id }, `/products/${product._id}`);
+      return;
+    }
+
+    addToCartForBuyNow();
+  };
+
+  const addToCartForBuyNow = useCallback(() => {
     startAddToCart(async () => {
       try {
-        if (isAuthenticated) await addProductToCart(product._id);
-        else addGuestCartItem({ productId: product._id, name: product.name, thumbnail: product.thumbnail, price: product.price, originalPrice: product.originalPrice, quantity: 1 });
+        await addProductToCart(product._id);
       } catch (cause) {
         setCartMessage(
           cause instanceof Error
@@ -78,11 +92,47 @@ export default function ProductDetails({
         );
       }
     });
+  }, [product._id, startAddToCart]);
+
+  const updateWishlist = useCallback(() => {
+    startAddToCart(async () => {
+      try {
+        const result = await toggleWishlistProduct(product._id);
+        setWishlisted(product._id, result.isWishlisted);
+        setCartMessage(result.isWishlisted ? "Added to wishlist." : "Removed from wishlist.");
+      } catch (cause) {
+        setCartMessage(cause instanceof Error ? cause.message : "Unable to update wishlist.");
+      }
+    });
+  }, [product._id, setWishlisted, startAddToCart]);
+
+  const handleWishlist = () => {
+    if (!isAuthenticated) {
+      requestLogin({ type: "wishlist", productId: product._id }, `/products/${product._id}`);
+      return;
+    }
+    updateWishlist();
   };
+
+  useEffect(() => {
+    const onAuthenticatedAction = (event: Event) => {
+      const action = (event as CustomEvent<PendingAuthAction>).detail;
+      if (isPendingAuthAction(action, { type: "buy-now", productId: product._id })) addToCartForBuyNow();
+      if (isPendingAuthAction(action, { type: "wishlist", productId: product._id })) updateWishlist();
+    };
+    window.addEventListener(AUTH_ACTION_EVENT, onAuthenticatedAction);
+    return () => window.removeEventListener(AUTH_ACTION_EVENT, onAuthenticatedAction);
+  }, [addToCartForBuyNow, product._id, updateWishlist]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-      <ProductGallery images={product.images} name={product.name} />
+      <ProductGallery
+        images={product.images}
+        name={product.name}
+        isWishlisted={isWishlisted(product._id)}
+        onToggleWishlist={handleWishlist}
+        wishlistDisabled={isAddingToCart}
+      />
       <div className="space-y-5">
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2 text-gray-600">
@@ -150,17 +200,19 @@ export default function ProductDetails({
         /> */}
 
         <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={handleAddToCart}
-            disabled={isAddingToCart || product.stock < 1}
-            className="cursor-pointer py-3 px-4 border-2 border-primary text-primary rounded-lg font-semibold text-gray-900 hover:bg-gray-50 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {product.stock < 1
-              ? "OUT OF STOCK"
-              : isAddingToCart
-                ? "ADDING..."
-                : "ADD TO CART"}
-          </button>
+          <Tooltip label="Add to cart">
+            <button
+              onClick={handleAddToCart}
+              disabled={isAddingToCart || product.stock < 1}
+              className="w-full cursor-pointer rounded-lg border-2 border-primary px-4 py-3 font-semibold text-gray-900 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {product.stock < 1
+                ? "OUT OF STOCK"
+                : isAddingToCart
+                  ? "ADDING..."
+                  : "ADD TO CART"}
+            </button>
+          </Tooltip>
           <button
             onClick={handleBuyNow}
             className="py-3 px-4 bg-primary text-white rounded-lg font-semibold  transition-colors cursor-pointer"

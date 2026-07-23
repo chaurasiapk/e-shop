@@ -4,13 +4,17 @@ import { useState } from "react";
 import Image from "next/image";
 import { Check, GitCompare, Heart, Share2 } from "lucide-react";
 import ImageZoom from "./image-zoomed";
+import Tooltip from "@/components/ui/tooltip";
 
 interface ProductGalleryProps {
   images: string[];
   name: string;
+  isWishlisted: boolean;
+  onToggleWishlist: () => void;
+  wishlistDisabled?: boolean;
 }
 
-export default function ProductGallery({ images, name }: ProductGalleryProps) {
+export default function ProductGallery({ images, name, isWishlisted, onToggleWishlist, wishlistDisabled = false }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
 
@@ -41,12 +45,17 @@ export default function ProductGallery({ images, name }: ProductGalleryProps) {
           </div>
 
           <div className="flex items-center gap-3 text-gray-600">
-            <button
-              aria-label="Add to wishlist"
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <Heart className="w-5 h-5" />
-            </button>
+            <Tooltip label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}>
+              <button
+                type="button"
+                onClick={onToggleWishlist}
+                disabled={wishlistDisabled}
+                aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                className={`rounded-full p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 ${isWishlisted ? "text-rose-500" : ""}`}
+              >
+                <Heart className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`} />
+              </button>
+            </Tooltip>
             <button
               aria-label="Compare product"
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"

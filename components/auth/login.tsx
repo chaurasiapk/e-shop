@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { LockKeyhole, Mail } from "lucide-react";
 import Link from "next/link";
 import { loginAction } from "@/features/auth";
@@ -8,13 +8,29 @@ import AuthField from "./auth-field";
 import AuthHeading from "./auth-heading";
 import AuthSocialSignIn from "./auth-social-sign-in";
 
-export default function Login() {
+export default function Login({
+  next,
+  onRegister,
+  onAuthenticated,
+  isPopup = false,
+}: {
+  next?: string;
+  onRegister?: () => void;
+  onAuthenticated?: () => void;
+  isPopup?: boolean;
+}) {
   const [state, formAction, isPending] = useActionState(loginAction, {});
+
+  useEffect(() => {
+    if (state.success) onAuthenticated?.();
+  }, [onAuthenticated, state.success]);
 
   return (
     <>
       <AuthHeading title="Welcome Back" description="Please enter your details to sign in" icon={<LockKeyhole className="h-5 w-5" />} />
       <form action={formAction} className="space-y-4">
+        {next && <input type="hidden" name="next" value={next} />}
+        {isPopup && <input type="hidden" name="popup" value="true" />}
         <AuthField label="Email address" name="email" type="email" placeholder="Enter your email" icon={<Mail className="h-4 w-4" />} />
         <AuthField label="Password" name="password" type="password" placeholder="Enter your password" icon={<LockKeyhole className="h-4 w-4" />} />
         <div className="flex items-center justify-between text-xs">
@@ -31,7 +47,11 @@ export default function Login() {
       </form>
       <AuthSocialSignIn />
       <p className="mt-7 text-center text-sm text-gray-500">
-        Don’t have an account? <Link href="/register" className="font-semibold text-primary hover:underline">Sign up</Link>
+        Don’t have an account? {onRegister ? (
+          <button type="button" onClick={onRegister} className="font-semibold text-primary hover:underline">Sign up</button>
+        ) : (
+          <Link href={next ? `/register?next=${encodeURIComponent(next)}` : "/register"} className="font-semibold text-primary hover:underline">Sign up</Link>
+        )}
       </p>
     </>
   );

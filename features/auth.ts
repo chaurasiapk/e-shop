@@ -13,7 +13,7 @@ import {
 import { getUserBySessionToken } from "@/services/auth.service";
 import { AUTH_SESSION_COOKIE } from "@/utils/contants";
 
-export type AuthActionState = { error?: string };
+export type AuthActionState = { error?: string; success?: boolean };
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30;
 
@@ -23,6 +23,10 @@ function value(formData: FormData, key: string) {
 
 function validEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function safeNextPath(value: string) {
+  return value.startsWith("/") && !value.startsWith("//") ? value : "/";
 }
 
 async function startSession(userId: string) {
@@ -48,7 +52,8 @@ export async function loginAction(_: AuthActionState, formData: FormData): Promi
   }
 
   await startSession(String(user._id));
-  redirect("/");
+  if (formData.get("popup") === "true") return { success: true };
+  redirect(safeNextPath(value(formData, "next")));
 }
 
 export async function registerAction(_: AuthActionState, formData: FormData): Promise<AuthActionState> {
@@ -67,7 +72,8 @@ export async function registerAction(_: AuthActionState, formData: FormData): Pr
 
   const user = await createUser(name, email, await hashPassword(password));
   await startSession(user._id);
-  redirect("/");
+  if (formData.get("popup") === "true") return { success: true };
+  redirect(safeNextPath(value(formData, "next")));
 }
 
 export async function logoutAction() {

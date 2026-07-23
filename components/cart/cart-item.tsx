@@ -1,16 +1,18 @@
 import { ICartItem } from '@/types/cart';
-import { X, RotateCcw, Truck } from 'lucide-react';
+import { Heart, X, RotateCcw, Truck } from 'lucide-react';
 import Image from 'next/image';
+import Tooltip from "@/components/ui/tooltip";
 
 interface Props {
   item: ICartItem;
   onToggleSelect: (id: string) => void;
   onRemove: (id: string) => void;
+  onMoveToWishlist: (id: string) => void;
   onQuantityChange: (id: string, delta: number) => void;
   disabled?: boolean;
 }
 
-export default function CartItem({ item, onToggleSelect, onRemove, onQuantityChange, disabled = false }: Props) {
+export default function CartItem({ item, onToggleSelect, onRemove, onMoveToWishlist, onQuantityChange, disabled = false }: Props) {
   const discount = item.originalPrice > item.price
     ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
     : 0;
@@ -64,14 +66,16 @@ export default function CartItem({ item, onToggleSelect, onRemove, onQuantityCha
                   {item.name}
                 </h3>
               </div>
-              <button
-                onClick={() => onRemove(item.productId)}
-                aria-label={`Remove ${item.name} from cart`}
-                disabled={disabled}
-                className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors p-0.5"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <Tooltip label="Remove from cart">
+                <button
+                  onClick={() => onRemove(item.productId)}
+                  aria-label={`Remove ${item.name} from cart`}
+                  disabled={disabled}
+                  className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors p-0.5"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </Tooltip>
             </div>
 
             {/* Price */}
@@ -114,6 +118,17 @@ export default function CartItem({ item, onToggleSelect, onRemove, onQuantityCha
 
       {/* Footer */}
       <div className="border-t border-gray-100 px-4 py-3 flex items-center gap-6">
+        <Tooltip label="Move to wishlist">
+          <button
+            type="button"
+            onClick={() => onMoveToWishlist(item.productId)}
+            disabled={disabled}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 transition-colors hover:text-rose-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Heart className="h-3.5 w-3.5" />
+            Move to wishlist
+          </button>
+        </Tooltip>
         <div className="flex items-center gap-1.5 text-xs text-gray-500">
           <RotateCcw className="w-3.5 h-3.5" />
           <span>{3} Days Return</span>

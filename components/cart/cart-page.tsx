@@ -1,12 +1,15 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { ShoppingCart, ChevronRight, MapPin } from "lucide-react";
 import { ICartItem } from "@/types/cart";
 import CartItem from "./cart-item";
 import OrderSummary from "./order-summary";
 import EmptyCart from "./empty-cart";
 import { changeCartItemQuantity, deleteCartItem } from "@/features/cart";
+import { moveProductToWishlist } from "@/features/wishlist";
 import { getGuestCart, removeGuestCartItem, updateGuestCartItemQuantity } from "@/utils/guest-cart";
+import { AUTH_ACTION_EVENT, isPendingAuthAction, type PendingAuthAction, useLoginPrompt } from "@/components/auth/login-prompt-provider";
+import { useWishlist } from "@/components/wishlist/wishlist-provider";
 
 const CartHeader = ({ length }: { length: number }) => {
   return (
@@ -58,6 +61,8 @@ export default function CartPage({
   );
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const { requestLogin } = useLoginPrompt();
+  const { setWishlisted } = useWishlist();
 
   const selectedItems = items.filter((item) => item.selected);
   const orderValue = selectedItems.reduce(
@@ -80,7 +85,7 @@ export default function CartPage({
     );
   };
 
-  const applyCart = (nextItems: ICartItem[]) => {
+  const applyCart = useCallback((nextItems: ICartItem[]) => {
     setItems((currentItems) =>
       nextItems.map((item) => ({
         ...item,
@@ -89,7 +94,7 @@ export default function CartPage({
             ?.selected ?? true,
       })),
     );
-  };
+  }, []);
 
   const handleRemove = (id: string) => {
     setError(null);
@@ -130,6 +135,25 @@ export default function CartPage({
     });
   };
 
+  const moveToWishlist = useCallback((productId: string) => {
+    setError(null);
+    startTransition(async () => {
+      try {
+        if (isAuthenticated) {
+          await moveProductToWishlist(productId);
+          setWishlisted(productId, true);
+          setItems((currentItems) => currentItems.filter((item) => item.productId !== productId));
+          return;
+        }
+
+        applyCart(removeGuestCartItem(productId));
+        requestLogin({ type: "move-to-wishlist", productId }, "/cart");
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Unable to move item to wishlist.");
+      }
+    });
+  }, [applyCart, isAuthenticated, requestLogin, setWishlisted, startTransition]);
+
   const allSelected = items.length > 0 && items.every((item) => item.selected);
   const handleToggleAll = () => {
     setItems((prev) =>
@@ -138,10 +162,31 @@ export default function CartPage({
   };
 
   const handleCheckout = () => {
+    if (!isAuthenticated) {
+      requestLogin({ type: "checkout" }, "/cart");
+      return;
+    }
+
+    proceedToCheckout();
+  };
+
+  const proceedToCheckout = useCallback(() => {
     alert(
       `Proceeding to checkout with ${itemCount} item(s) totaling ₹${(orderValue - discount + shipping).toLocaleString("en-IN")}`,
     );
-  };
+  }, [discount, itemCount, orderValue, shipping]);
+
+  useEffect(() => {
+    const onAuthenticatedAction = (event: Event) => {
+      const action = (event as CustomEvent<PendingAuthAction>).detail;
+      if (isPendingAuthAction(action, { type: "checkout" })) proceedToCheckout();
+      if (action.type === "move-to-wishlist") {
+        moveToWishlist(action.productId);
+      }
+    };
+    window.addEventListener(AUTH_ACTION_EVENT, onAuthenticatedAction);
+    return () => window.removeEventListener(AUTH_ACTION_EVENT, onAuthenticatedAction);
+  }, [moveToWishlist, proceedToCheckout]);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -204,6 +249,7 @@ export default function CartPage({
                   item={item}
                   onToggleSelect={handleToggleSelect}
                   onRemove={handleRemove}
+                  onMoveToWishlist={moveToWishlist}
                   onQuantityChange={handleQuantityChange}
                   disabled={isPending}
                 />

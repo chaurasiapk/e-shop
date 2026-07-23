@@ -29,3 +29,18 @@ export async function toggleWishlistProduct(userId: string, productId: string) {
   await wishlist.save();
   return !isWishlisted;
 }
+
+export async function addWishlistProduct(userId: string, productId: string) {
+  await connectDB();
+  const wishlist = await WishlistModel.findOne({ userId });
+
+  if (!wishlist) {
+    await WishlistModel.create({ _id: `wishlist_${userId}`, userId, productIds: [productId] });
+    return;
+  }
+
+  if (!wishlist.productIds.includes(productId)) {
+    wishlist.productIds.push(productId);
+    await wishlist.save();
+  }
+}

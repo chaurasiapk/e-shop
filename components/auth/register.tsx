@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { Eye, LockKeyhole, Mail, UserRound } from "lucide-react";
 import Link from "next/link";
 import { registerAction } from "@/features/auth";
@@ -8,13 +8,29 @@ import AuthField from "./auth-field";
 import AuthHeading from "./auth-heading";
 import AuthSocialSignIn from "./auth-social-sign-in";
 
-export default function Register() {
+export default function Register({
+  next,
+  onLogin,
+  onAuthenticated,
+  isPopup = false,
+}: {
+  next?: string;
+  onLogin?: () => void;
+  onAuthenticated?: () => void;
+  isPopup?: boolean;
+}) {
   const [state, formAction, isPending] = useActionState(registerAction, {});
+
+  useEffect(() => {
+    if (state.success) onAuthenticated?.();
+  }, [onAuthenticated, state.success]);
 
   return (
     <>
       <AuthHeading title="Create your account" description="Start shopping with E-Shop today" icon={<UserRound className="h-5 w-5" />} />
       <form action={formAction} className="space-y-4">
+        {next && <input type="hidden" name="next" value={next} />}
+        {isPopup && <input type="hidden" name="popup" value="true" />}
         <AuthField label="Full name" name="name" placeholder="Enter your full name" icon={<UserRound className="h-4 w-4" />} />
         <AuthField label="Email address" name="email" type="email" placeholder="Enter your email" icon={<Mail className="h-4 w-4" />} />
         <AuthField label="Password" name="password" type="password" placeholder="Enter your password" icon={<LockKeyhole className="h-4 w-4" />} />
@@ -30,7 +46,11 @@ export default function Register() {
       </form>
       <AuthSocialSignIn />
       <p className="mt-7 text-center text-sm text-gray-500">
-        Already have an account? <Link href="/login" className="font-semibold text-primary hover:underline">Log in</Link>
+        Already have an account? {onLogin ? (
+          <button type="button" onClick={onLogin} className="font-semibold text-primary hover:underline">Log in</button>
+        ) : (
+          <Link href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"} className="font-semibold text-primary hover:underline">Log in</Link>
+        )}
       </p>
     </>
   );
