@@ -7,6 +7,7 @@ import SearchInput from "./search-input";
 import CartIcon from "./cart-icon";
 import { getCurrentUser } from "@/features/auth";
 import UserMenu from "./user-menu";
+import GuestCartMerger from "@/components/cart/guest-cart-merger";
 
 function SearchInputFallback() {
   return (
@@ -20,6 +21,7 @@ export default async function Header() {
   const user = await getCurrentUser();
   return (
     <header className="sticky top-0 z-50 shadow-sm">
+      {user && <GuestCartMerger />}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-6">
           <button className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">

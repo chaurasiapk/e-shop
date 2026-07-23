@@ -1,10 +1,8 @@
-import { getCurrentUser } from "@/features/auth";
+import { requireCurrentUser } from "@/features/auth";
 import { Mail, ShieldCheck, UserRound } from "lucide-react";
-import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
-  const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  const user = await requireCurrentUser();
   return (
     <main className="flex flex-1 bg-surface">
       <section className="mx-auto w-full max-w-7xl rounded-2xl bg-white p-6 sm:p-8">

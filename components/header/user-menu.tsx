@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { logoutAction } from "@/features/auth";
 import type { AuthUser } from "@/types/auth";
+import { clearGuestCart } from "@/utils/guest-cart";
 
 export default function UserMenu({ user }: { user: AuthUser }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,7 +46,7 @@ export default function UserMenu({ user }: { user: AuthUser }) {
             Wishlist
             
           </Link>
-          <form action={logoutAction}>
+          <form action={logoutAction} onSubmit={clearGuestCart}>
             <button type="submit" role="menuitem" className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-red-600 hover:bg-red-50">
               <LogOut className="h-4 w-4" />
               Log out

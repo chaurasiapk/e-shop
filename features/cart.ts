@@ -1,38 +1,22 @@
 "use server";
 
-import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import {
-  getCartBySession,
+  getCartByUserId,
   removeCartItem,
   updateCartItemQuantity,
   upsertCartItem,
 } from "@/services/cart.service";
 import { getProductsDetails } from "@/services/product.service";
 import type { ICartItem } from "@/types/cart";
+import { getCurrentUser, requireCurrentUser } from "@/features/auth";
 
-const CART_SESSION_COOKIE = "e-shop-cart-session";
-
-async function getCartSessionId(create = false) {
-  const cookieStore = await cookies();
-  const existingSessionId = cookieStore.get(CART_SESSION_COOKIE)?.value;
-  if (existingSessionId || !create) return existingSessionId;
-
-  const sessionId = randomUUID();
-  cookieStore.set(CART_SESSION_COOKIE, sessionId, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-  });
-  return sessionId;
-}
+export type GuestCartItem = Pick<ICartItem, "productId" | "quantity">;
 
 export async function getCurrentCart() {
-  const sessionId = await getCartSessionId();
-  return sessionId ? getCartBySession(sessionId) : null;
+  const user = await getCurrentUser();
+  if (!user) return null;
+  return getCartByUserId(user._id);
 }
 
 export async function addProductToCart(productId: string) {
@@ -43,8 +27,8 @@ export async function addProductToCart(productId: string) {
     throw new Error("This product is unavailable.");
   }
 
-  const sessionId = await getCartSessionId(true);
-  const existingCart = await getCartBySession(sessionId!);
+  const user = await requireCurrentUser();
+  const existingCart = await getCartByUserId(user._id);
   const existingItem = existingCart?.items.find(
     (item) => item.productId === product._id,
   );
@@ -59,7 +43,7 @@ export async function addProductToCart(productId: string) {
     originalPrice: product.originalPrice,
     quantity: 1,
   };
-  const cart = await upsertCartItem(sessionId!, item);
+  const cart = await upsertCartItem(user._id, item);
   revalidatePath("/cart");
   return cart;
 }
@@ -74,9 +58,8 @@ export async function changeCartItemQuantity(productId: string, quantity: number
     throw new Error("The requested quantity is unavailable.");
   }
 
-  const sessionId = await getCartSessionId();
-  if (!sessionId) throw new Error("Your cart is empty.");
-  const cart = await updateCartItemQuantity(sessionId, productId, quantity);
+  const user = await requireCurrentUser();
+  const cart = await updateCartItemQuantity(user._id, productId, quantity);
   if (!cart) throw new Error("Cart item not found.");
   revalidatePath("/cart");
   return cart;
@@ -85,10 +68,42 @@ export async function changeCartItemQuantity(productId: string, quantity: number
 export async function deleteCartItem(productId: string) {
   if (!productId) throw new Error("A product is required.");
 
-  const sessionId = await getCartSessionId();
-  if (!sessionId) throw new Error("Your cart is empty.");
-  const cart = await removeCartItem(sessionId, productId);
+  const user = await requireCurrentUser();
+  const cart = await removeCartItem(user._id, productId);
   if (!cart) throw new Error("Cart item not found.");
+  revalidatePath("/", "layout");
   revalidatePath("/cart");
   return cart;
+}
+
+export async function mergeGuestCart(guestItems: GuestCartItem[]) {
+  const user = await requireCurrentUser();
+  const quantities = new Map<string, number>();
+
+  for (const item of guestItems) {
+    if (!item.productId || !Number.isInteger(item.quantity) || item.quantity < 1) continue;
+    quantities.set(item.productId, (quantities.get(item.productId) ?? 0) + item.quantity);
+  }
+
+  for (const [productId, quantity] of quantities) {
+    const product = await getProductsDetails(productId);
+    if (!product || !product.isActive || product.stock < 1) continue;
+
+    const cart = await getCartByUserId(user._id);
+    const currentQuantity = cart?.items.find((item) => item.productId === productId)?.quantity ?? 0;
+    const quantityToAdd = Math.min(quantity, Math.max(product.stock - currentQuantity, 0));
+    if (!quantityToAdd) continue;
+
+    await upsertCartItem(user._id, {
+      productId: product._id,
+      name: product.name,
+      thumbnail: product.thumbnail,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      quantity: quantityToAdd,
+    });
+  }
+
+  revalidatePath("/");
+  revalidatePath("/cart");
 }

@@ -30,11 +30,11 @@ export async function getCarts(): Promise<ICart[]> {
   return carts.map(toCart);
 }
 
-export async function getCartBySession(
-  sessionId: string,
+export async function getCartByUserId(
+  userId: string,
 ): Promise<ICart | null> {
   await connectDB();
-  const cart = await CartModel.findOne({ sessionId })
+  const cart = await CartModel.findOne({ userId })
     .lean<ICart | null>()
     .exec();
   if (!cart) return null;
@@ -42,18 +42,18 @@ export async function getCartBySession(
 }
 
 export async function upsertCartItem(
-  sessionId: string,
+  userId: string,
   item: ICartItem,
 ): Promise<ICart> {
   await connectDB();
 
-  let cart = await CartModel.findOne({ sessionId });
+  let cart = await CartModel.findOne({ userId });
 
   if (!cart) {
     const totals = summarize([item]);
     cart = await CartModel.create({
-      _id: `cart_${Date.now()}`,
-      sessionId,
+      _id: `cart_${userId}`,
+      userId,
       items: [item],
       ...totals,
     });
@@ -77,12 +77,12 @@ export async function upsertCartItem(
 }
 
 export async function updateCartItemQuantity(
-  sessionId: string,
+  userId: string,
   productId: string,
   quantity: number,
 ): Promise<ICart | null> {
   await connectDB();
-  const cart = await CartModel.findOne({ sessionId });
+  const cart = await CartModel.findOne({ userId });
   if (!cart) return null;
 
   const item = cart.items.find(
@@ -100,17 +100,26 @@ export async function updateCartItemQuantity(
 }
 
 export async function removeCartItem(
-  sessionId: string,
+  userId: string,
   productId: string,
 ): Promise<ICart | null> {
   await connectDB();
-  const cart = await CartModel.findOne({ sessionId });
+  const cart = await CartModel.findOne({ userId });
   if (!cart) return null;
 
-  cart.items = cart.items.filter(
+  const remainingItems = cart.items.filter(
     (cartItem: ICartItem) => cartItem.productId !== productId,
   );
-  const totals = summarize(cart.items);
+  if (remainingItems.length === cart.items.length) return null;
+
+  if (remainingItems.length === 0) {
+    const deletedCart = toCart(cart.toObject());
+    await CartModel.deleteOne({ _id: cart._id });
+    return { ...deletedCart, items: [], totalItems: 0, totalPrice: 0 };
+  }
+
+  cart.items = remainingItems;
+  const totals = summarize(remainingItems);
   cart.totalItems = totals.totalItems;
   cart.totalPrice = totals.totalPrice;
   await cart.save();

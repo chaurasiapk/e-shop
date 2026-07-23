@@ -17,7 +17,7 @@ const cartItemSchema = new Schema(
 const cartSchema = new Schema<ICart>(
   {
     _id: { type: String, required: true },
-    sessionId: { type: String, required: true, index: true },
+    userId: { type: String, required: true, unique: true, sparse: true },
     items: { type: [cartItemSchema], default: [] },
     totalItems: { type: Number, default: 0 },
     totalPrice: { type: Number, default: 0 },

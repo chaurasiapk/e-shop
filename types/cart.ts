@@ -10,7 +10,7 @@ export type ICartItem = {
 
 export type ICart = {
   _id: string;
-  sessionId: string;
+  userId: string;
   items: ICartItem[];
   totalItems: number;
   totalPrice: number;

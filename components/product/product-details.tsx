@@ -7,6 +7,7 @@ import ProductAccordions from "@/components/product/product-accordions";
 import { formatPrice } from "@/utils/helper";
 import { IDetailedProduct } from "@/types/products";
 import { addProductToCart } from "@/features/cart";
+import { addGuestCartItem } from "@/utils/guest-cart";
 
 const trustBadges = [
   { icon: Shield, label: "24 Months Warranty" },
@@ -18,8 +19,10 @@ const trustBadges = [
 
 export default function ProductDetails({
   product,
+  isAuthenticated,
 }: {
   product: IDetailedProduct;
+  isAuthenticated: boolean;
 }) {
   // const [selectedVariantId, setSelectedVariantId] = useState(product.variants[0].id);
   const [pincode, setPincode] = useState("");
@@ -39,7 +42,18 @@ export default function ProductDetails({
     setCartMessage(null);
     startAddToCart(async () => {
       try {
-        await addProductToCart(product._id);
+        if (isAuthenticated) {
+          await addProductToCart(product._id);
+        } else {
+          addGuestCartItem({
+            productId: product._id,
+            name: product.name,
+            thumbnail: product.thumbnail,
+            price: product.price,
+            originalPrice: product.originalPrice,
+            quantity: 1,
+          });
+        }
         setCartMessage("Added to cart.");
       } catch (cause) {
         setCartMessage(
@@ -54,7 +68,8 @@ export default function ProductDetails({
   const handleBuyNow = () => {
     startAddToCart(async () => {
       try {
-        await addProductToCart(product._id);
+        if (isAuthenticated) await addProductToCart(product._id);
+        else addGuestCartItem({ productId: product._id, name: product.name, thumbnail: product.thumbnail, price: product.price, originalPrice: product.originalPrice, quantity: 1 });
       } catch (cause) {
         setCartMessage(
           cause instanceof Error

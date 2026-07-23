@@ -2,6 +2,7 @@ import ProductDetails from "@/components/product/product-details";
 import { getProductsDetails } from "@/features/products";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getCurrentUser } from "@/features/auth";
 
 export async function generateMetadata({
   params,
@@ -28,6 +29,7 @@ export default async function ProductDetailsPage({
 }) {
   const { productId } = await params;
   const { product } = await getProductsDetails(productId);
+  const user = await getCurrentUser();
 
   if (!product) {
     notFound();
@@ -36,7 +38,7 @@ export default async function ProductDetailsPage({
   return (
     <main className="flex-1 bg-white">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <ProductDetails product={product} />
+        <ProductDetails product={product} isAuthenticated={Boolean(user)} />
       </div>
     </main>
   );

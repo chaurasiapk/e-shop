@@ -6,6 +6,7 @@ import CartItem from "./cart-item";
 import OrderSummary from "./order-summary";
 import EmptyCart from "./empty-cart";
 import { changeCartItemQuantity, deleteCartItem } from "@/features/cart";
+import { getGuestCart, removeGuestCartItem, updateGuestCartItemQuantity } from "@/utils/guest-cart";
 
 const CartHeader = ({ length }: { length: number }) => {
   return (
@@ -47,11 +48,13 @@ const DeliveryBar = () => {
 
 export default function CartPage({
   initialItems,
+  isAuthenticated,
 }: {
   initialItems: ICartItem[];
+  isAuthenticated: boolean;
 }) {
   const [items, setItems] = useState<ICartItem[]>(() =>
-    initialItems.map((item) => ({ ...item, selected: true })),
+    (isAuthenticated ? initialItems : getGuestCart()).map((item) => ({ ...item, selected: true })),
   );
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -92,8 +95,12 @@ export default function CartPage({
     setError(null);
     startTransition(async () => {
       try {
-        const cart = await deleteCartItem(id);
-        applyCart(cart.items);
+        if (isAuthenticated) {
+          const cart = await deleteCartItem(id);
+          applyCart(cart.items);
+        } else {
+          applyCart(removeGuestCartItem(id));
+        }
       } catch (cause) {
         setError(
           cause instanceof Error ? cause.message : "Unable to remove item.",
@@ -108,8 +115,13 @@ export default function CartPage({
     setError(null);
     startTransition(async () => {
       try {
-        const cart = await changeCartItemQuantity(id, item.quantity + delta);
-        applyCart(cart.items);
+        const quantity = item.quantity + delta;
+        if (isAuthenticated) {
+          const cart = await changeCartItemQuantity(id, quantity);
+          applyCart(cart.items);
+        } else {
+          applyCart(updateGuestCartItemQuantity(id, quantity));
+        }
       } catch (cause) {
         setError(
           cause instanceof Error ? cause.message : "Unable to update quantity.",

@@ -83,3 +83,8 @@ export async function getCurrentUser() {
   return token ? getUserBySessionToken(token) : null;
 }
 
+export async function requireCurrentUser() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  return user;
+}

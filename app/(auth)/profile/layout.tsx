@@ -1,12 +1,10 @@
-import { getCurrentUser } from "@/features/auth";
-import { redirect } from "next/navigation";
+import { requireCurrentUser } from "@/features/auth";
 
 export default async function UserLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  await requireCurrentUser();
   return <div className="">{children}</div>;
 }
