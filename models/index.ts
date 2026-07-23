@@ -6,3 +6,6 @@ export { CartModel } from "./cart.model";
 export { UserModel } from "./user.model";
 export { AuthSessionModel } from "./auth-session.model";
 export { WishlistModel } from "./wishlist.model";
+export { AddressModel } from "./address.model";
+export { OrderModel } from "./order.model";
+export { PaymentModel } from "./payment.model";

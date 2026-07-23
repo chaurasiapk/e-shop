@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, LogOut, UserRound } from "lucide-react";
+import { CreditCard, Heart, LogOut, MapPin, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { logoutAction } from "@/features/auth";
@@ -45,6 +45,14 @@ export default function UserMenu({ user }: { user: AuthUser }) {
             <Heart className="h-4 w-4" />
             Orders
             
+          </Link>
+          <Link href="/profile/addresses" role="menuitem" onClick={() => setIsOpen(false)} className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-surface">
+            <MapPin className="h-4 w-4" />
+            Addresses
+          </Link>
+          <Link href="/profile/payments" role="menuitem" onClick={() => setIsOpen(false)} className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-surface">
+            <CreditCard className="h-4 w-4" />
+            Payments
           </Link>
           <form action={logoutAction} onSubmit={clearGuestCart}>
             <button type="submit" role="menuitem" className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-red-600 hover:bg-red-50">
