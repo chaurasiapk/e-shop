@@ -1,7 +1,7 @@
 import Image from "next/image";
 import SectionHeader from "./section-header";
 import { getAllBrands } from "@/features/brands";
-import { getRandomColor } from "@/utils/helper";
+import { OFFER_BG } from "@/utils/contants";
 
 export default async function TopBrands() {
   const { brands } = await getAllBrands();
@@ -14,7 +14,7 @@ export default async function TopBrands() {
         {topBrands.map((brand) => (
           <div
             key={brand._id}
-            className={`bg-[${getRandomColor()}] rounded-2xl overflow-hidden relative h-48 md:h-56 cursor-pointer hover:shadow-lg transition-shadow    from-slate-800 via-slate-700 to-slate-900`}
+            className={`bg-[${OFFER_BG}] rounded-2xl overflow-hidden relative h-48 md:h-56 cursor-pointer hover:shadow-lg transition-shadow    from-slate-800 via-slate-700 to-slate-900`}
           >
             <div className="p-6 relative z-10">
               <h3 className="text-xl font-bold text-gray-800">{brand.name}</h3>

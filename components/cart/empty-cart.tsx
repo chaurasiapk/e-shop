@@ -1,4 +1,5 @@
 import { ShoppingCart } from "lucide-react";
+import Link from "next/link";
 
 export default function EmptyCart() {
   return (
@@ -7,7 +8,10 @@ export default function EmptyCart() {
       <h2 className="text-xl font-semibold text-gray-800 mb-1">
         Your cart is empty
       </h2>
-      <p className="text-sm text-gray-500">Add items to get started.</p>
+      <p className="text-sm text-gray-500">Add items to get started,  {" "}
+        <Link className="text-primary underline " href={"/products"}>Continue</Link>
+        {" "}shopping.
+      </p>
     </div>
   );
 }

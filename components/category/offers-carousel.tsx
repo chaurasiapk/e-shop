@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import { formatPrice } from "@/utils/helper";
 import { IOffer } from "@/types/offers";
+import { OFFER_BG } from "@/utils/contants";
 
 interface OffersCarouselProps {
   offers: IOffer[];
@@ -35,7 +36,7 @@ export default function OffersCarousel({ offers }: OffersCarouselProps) {
         {offers.map((offer) => (
           <article
             key={offer._id}
-            className={`relative shrink-0 w-[88%] sm:w-[70%] md:w-[55%] snap-start rounded-2xl bg-gradient-to-br ${offer.bg} overflow-hidden min-h-[220px]`}
+            className={`relative shrink-0 w-[88%] sm:w-[70%] md:w-[55%] snap-start rounded-2xl bg-gradient-to-br ${OFFER_BG} overflow-hidden min-h-[220px]`}
           >
             <div className="flex h-full p-5 md:p-6">
               <div className="flex-1 z-10 flex flex-col justify-between pr-4">
@@ -74,7 +75,7 @@ export default function OffersCarousel({ offers }: OffersCarouselProps) {
                   alt={offer.title}
                   width={200}
                   height={240}
-                  className="object-contain w-full h-auto drop-shadow-2xl"
+                  className="object-contain w-auto h-[200px] drop-shadow-2xl"
                 />
               </div>
             </div>

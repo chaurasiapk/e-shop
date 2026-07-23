@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-// import { heroSlides } from "@/lib/data";
 import { IOffer } from "@/types/offers";
 import { formatPrice } from "@/utils/helper";
+import { OFFER_BG } from "@/utils/contants";
 
 export default function HeroCarousel({ offers = [] }: { offers?: IOffer[] }) {
   const [current, setCurrent] = useState(0);
@@ -39,13 +39,13 @@ export default function HeroCarousel({ offers = [] }: { offers?: IOffer[] }) {
   const prev = () => {
     setCurrent((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1));
   };
-
+  
   return (
     <section
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       className={`relative overflow-hidden rounded-2xl bg-gradient-to-r
-    ${heroSlides[current].bg}  h-[280px] md:h-[320px] cursor-pointer`}
+    ${OFFER_BG}  h-[280px] md:h-[320px] cursor-pointer`}
     >
       {/* Slider Track */}
       <div
