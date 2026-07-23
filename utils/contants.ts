@@ -7,3 +7,4 @@ export const LogoLight =
 export const AUTH_SESSION_COOKIE = "e-shop-session";
 
 export const OFFER_BG = "from-slate-800 via-slate-700 to-slate-900"
+export const BRANDS_BG = "from-gray-600 via-gray-500 to-gray-700"

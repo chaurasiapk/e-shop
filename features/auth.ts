@@ -88,3 +88,7 @@ export async function requireCurrentUser() {
   if (!user) redirect("/login");
   return user;
 }
+
+export async function isAuthenticated() {
+  return Boolean(await getCurrentUser());
+}

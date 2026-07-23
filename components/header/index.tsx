@@ -44,7 +44,7 @@ export default async function Header() {
               href="/profile/wishlist"
               className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors cursor-pointer"
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="w-5 h-5 fill-current text-rose-500" />
               <span className="hidden sm:inline">Wishlist</span>
             </Link>
               </>

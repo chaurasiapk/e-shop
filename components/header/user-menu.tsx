@@ -36,14 +36,14 @@ export default function UserMenu({ user }: { user: AuthUser }) {
             <UserRound className="h-4 w-4" />
             My profile
           </Link>
-          <Link href="/profile/orders" role="menuitem" onClick={() => setIsOpen(false)} className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-surface">
+          <Link href="/profile/wishlist" role="menuitem" onClick={() => setIsOpen(false)} className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-surface">
             <UserRound className="h-4 w-4" />
-            Orders
+            Wishlist
             
           </Link>
           <Link href="/profile/orders" role="menuitem" onClick={() => setIsOpen(false)} className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-surface">
             <Heart className="h-4 w-4" />
-            Wishlist
+            Orders
             
           </Link>
           <form action={logoutAction} onSubmit={clearGuestCart}>

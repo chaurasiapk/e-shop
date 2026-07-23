@@ -5,6 +5,9 @@ import Navbar from "@/components/navbar";
 import Header from "@/components/header";
 import { getCategories } from "@/features/categories";
 import { FavIcon } from "@/utils/contants";
+import { getCurrentUser } from "@/features/auth";
+import { getWishlistByUserId } from "@/services/wishlist.service";
+import WishlistProvider from "@/components/wishlist/wishlist-provider";
 
 import "./globals.css";
 
@@ -21,15 +24,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { categories } = await getCategories();
+  const [{ categories }, user] = await Promise.all([getCategories(), getCurrentUser()]);
+  const wishlist = user ? await getWishlistByUserId(user._id) : null;
 
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col ">
-        <Header />
-        <Navbar categories={categories} />
-        {children}
-        <Footer categories={categories} />
+        <WishlistProvider initialProductIds={wishlist?.productIds ?? []} isAuthenticated={Boolean(user)}>
+          <Header />
+          <Navbar categories={categories} />
+          {children}
+          <Footer categories={categories} />
+        </WishlistProvider>
       </body>
     </html>
   );

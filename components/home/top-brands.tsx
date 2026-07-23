@@ -1,7 +1,7 @@
 import Image from "next/image";
 import SectionHeader from "./section-header";
 import { getAllBrands } from "@/features/brands";
-import { OFFER_BG } from "@/utils/contants";
+import { BRANDS_BG, OFFER_BG } from "@/utils/contants";
 
 export default async function TopBrands() {
   const { brands } = await getAllBrands();
@@ -14,11 +14,11 @@ export default async function TopBrands() {
         {topBrands.map((brand) => (
           <div
             key={brand._id}
-            className={`bg-[${OFFER_BG}] rounded-2xl overflow-hidden relative h-48 md:h-56 cursor-pointer hover:shadow-lg transition-shadow    from-slate-800 via-slate-700 to-slate-900`}
+            className={`rounded-2xl overflow-hidden relative h-48 md:h-56 cursor-pointer hover:shadow-lg transition-shadow bg-gradient-to-br ${BRANDS_BG}`}
           >
             <div className="p-6 relative z-10">
-              <h3 className="text-xl font-bold text-gray-800">{brand.name}</h3>
-              <p className="text-sm font-semibold text-primary mt-1">
+              <h3 className="text-xl font-bold text-[#ffffff]">{brand.name}</h3>
+              <p className="text-sm font-semibold text-[#ffffff] mt-1">
                 {brand.description}
               </p>
             </div>

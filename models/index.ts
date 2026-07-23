@@ -5,3 +5,4 @@ export { OfferModel } from "./offer.model";
 export { CartModel } from "./cart.model";
 export { UserModel } from "./user.model";
 export { AuthSessionModel } from "./auth-session.model";
+export { WishlistModel } from "./wishlist.model";
